@@ -10,8 +10,19 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
     notes: '',
   });
 
+  const today = new Date();
+  const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    .toISOString()
+    .split('T')[0];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.appointmentDate && formData.appointmentDate < minDate) {
+      alert('You cannot book an appointment in the past.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -54,6 +65,7 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
               <input
                 type="date"
                 required
+                min={minDate}
                 value={formData.appointmentDate}
                 onChange={(e) => setFormData({ ...formData, appointmentDate: e.target.value })}
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"

@@ -39,6 +39,8 @@ public class AppointmentService {
         User user = userRepository.findById(patientUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        validateAppointmentDateNotInPast(dto.getAppointmentDate());
+
         // Check if user has a patient profile, if not create one
         Patient patient = patientRepository.findByUserId(patientUserId)
                 .orElseGet(() -> {
@@ -79,6 +81,16 @@ public class AppointmentService {
 
         appointment = appointmentRepository.save(appointment);
         return convertToDto(appointment);
+    }
+
+    private void validateAppointmentDateNotInPast(LocalDate appointmentDate) {
+        if (appointmentDate == null) {
+            throw new BadRequestException("Appointment date is required");
+        }
+
+        if (appointmentDate.isBefore(LocalDate.now())) {
+            throw new BadRequestException("Cannot book appointment for a past date");
+        }
     }
 
     private boolean isDoctorAvailable(Long doctorId, LocalDate appointmentDate, String appointmentTime) {
