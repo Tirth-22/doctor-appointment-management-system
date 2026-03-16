@@ -87,6 +87,8 @@ public class AdminService {
                 .name(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }

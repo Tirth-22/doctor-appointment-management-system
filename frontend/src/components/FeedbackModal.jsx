@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { feedbackApi } from '../services/api';
 
 export default function FeedbackModal({ appointment, doctor, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -22,26 +23,13 @@ export default function FeedbackModal({ appointment, doctor, onClose, onSuccess 
     setLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/feedback/appointment/${appointment.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to submit feedback');
-      }
-
-      toast.success('Thank you for your feedback!');
+      await feedbackApi.submitFeedback(appointment.id, formData);
+      toast.success('Thank you. Your feedback has been saved.');
       onSuccess();
       onClose();
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      toast.error(error.message || 'Failed to submit feedback');
+      toast.error(error.response?.data?.message || error.message || 'Failed to submit feedback');
     } finally {
       setLoading(false);
     }

@@ -30,6 +30,30 @@ function DoctorProfilePage() {
     bio: ''
   });
 
+  const profileChecklist = [
+    {
+      key: 'specialization',
+      label: 'Select your specialization',
+      complete: !!formData.specialization,
+    },
+    {
+      key: 'experience',
+      label: 'Add years of experience',
+      complete: formData.experience !== '' && Number(formData.experience) >= 0,
+    },
+    {
+      key: 'hospital',
+      label: 'Add hospital or clinic name',
+      complete: !!formData.hospital.trim(),
+    },
+    {
+      key: 'bio',
+      label: 'Write a short professional bio',
+      complete: !!formData.bio.trim(),
+    },
+  ];
+  const remainingChecklistItems = profileChecklist.filter((item) => !item.complete);
+
   useEffect(() => {
     if (user?.role !== 'DOCTOR') {
       toast.error('Only doctors can access this page');
@@ -198,6 +222,17 @@ function DoctorProfilePage() {
             Please fill in your professional details to appear in the doctor directory.
           </p>
         </div>
+
+        {remainingChecklistItems.length > 0 && (
+          <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
+            <p className="text-amber-800 font-semibold mb-2">Profile completion tips</p>
+            <ul className="text-amber-700 text-sm space-y-1">
+              {remainingChecklistItems.map((item) => (
+                <li key={item.key}>• {item.label}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

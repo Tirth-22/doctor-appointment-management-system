@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import DoctorCard from '../components/DoctorCard';
 import BookAppointmentModal from '../components/BookAppointmentModal';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { doctorApi } from '../services/api';
+import { doctorApi, feedbackApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Search } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -33,7 +33,31 @@ export default function DoctorsPage() {
   const fetchDoctors = async () => {
     try {
       const response = await doctorApi.getAllDoctors();
-      setDoctors(response.data.data || []);
+      const rawDoctors = response.data.data || [];
+      const doctorsWithRatings = await Promise.all(
+        rawDoctors.map(async (doctor) => {
+          try {
+            const [ratingRes, countRes] = await Promise.all([
+              feedbackApi.getDoctorRating(doctor.id),
+              feedbackApi.getDoctorFeedbackCount(doctor.id),
+            ]);
+
+            return {
+              ...doctor,
+              averageRating: ratingRes.data?.data || 0,
+              ratingCount: countRes.data?.data || 0,
+            };
+          } catch (ratingError) {
+            return {
+              ...doctor,
+              averageRating: 0,
+              ratingCount: 0,
+            };
+          }
+        })
+      );
+
+      setDoctors(doctorsWithRatings);
     } catch (error) {
       console.error('Error fetching doctors:', error);
       toast.error('Failed to load doctors');
@@ -63,7 +87,31 @@ export default function DoctorsPage() {
             break;
         }
 
-        setFilteredDoctors(response.data.data || []);
+        const searchedDoctors = response.data.data || [];
+        const searchedWithRatings = await Promise.all(
+          searchedDoctors.map(async (doctor) => {
+            try {
+              const [ratingRes, countRes] = await Promise.all([
+                feedbackApi.getDoctorRating(doctor.id),
+                feedbackApi.getDoctorFeedbackCount(doctor.id),
+              ]);
+
+              return {
+                ...doctor,
+                averageRating: ratingRes.data?.data || 0,
+                ratingCount: countRes.data?.data || 0,
+              };
+            } catch (ratingError) {
+              return {
+                ...doctor,
+                averageRating: 0,
+                ratingCount: 0,
+              };
+            }
+          })
+        );
+
+        setFilteredDoctors(searchedWithRatings);
       } catch (error) {
         console.error('Error searching doctors:', error);
         toast.error('Search failed');

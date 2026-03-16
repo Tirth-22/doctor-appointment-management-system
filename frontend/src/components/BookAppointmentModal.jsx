@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { appointmentApi } from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -8,6 +9,10 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
     appointmentDate: '',
     appointmentTime: '',
     notes: '',
+  });
+  const [errors, setErrors] = useState({
+    appointmentDate: '',
+    appointmentTime: '',
   });
 
   const today = new Date();
@@ -18,8 +23,24 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.appointmentDate && formData.appointmentDate < minDate) {
-      alert('You cannot book an appointment in the past.');
+    const nextErrors = {
+      appointmentDate: '',
+      appointmentTime: '',
+    };
+
+    if (!formData.appointmentDate) {
+      nextErrors.appointmentDate = 'Please select an appointment date.';
+    } else if (formData.appointmentDate < minDate) {
+      nextErrors.appointmentDate = 'Appointment date cannot be in the past.';
+    }
+
+    if (!formData.appointmentTime) {
+      nextErrors.appointmentTime = 'Please select a preferred time.';
+    }
+
+    setErrors(nextErrors);
+
+    if (nextErrors.appointmentDate || nextErrors.appointmentTime) {
       return;
     }
 
@@ -35,7 +56,7 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
       onClose();
     } catch (error) {
       console.error('Error booking appointment:', error);
-      alert(error.response?.data?.message || 'Failed to book appointment');
+      toast.error(error.response?.data?.message || 'Unable to book appointment right now. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -67,9 +88,15 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
                 required
                 min={minDate}
                 value={formData.appointmentDate}
-                onChange={(e) => setFormData({ ...formData, appointmentDate: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, appointmentDate: e.target.value });
+                  setErrors((prev) => ({ ...prev, appointmentDate: '' }));
+                }}
                 className="w-full px-4 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
               />
+              {errors.appointmentDate && (
+                <p className="text-xs text-red-600 mt-1">{errors.appointmentDate}</p>
+              )}
             </div>
 
             <div>
@@ -80,9 +107,15 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
                 type="time"
                 required
                 value={formData.appointmentTime}
-                onChange={(e) => setFormData({ ...formData, appointmentTime: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, appointmentTime: e.target.value });
+                  setErrors((prev) => ({ ...prev, appointmentTime: '' }));
+                }}
                 className="w-full px-4 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
               />
+              {errors.appointmentTime && (
+                <p className="text-xs text-red-600 mt-1">{errors.appointmentTime}</p>
+              )}
             </div>
 
             <div>

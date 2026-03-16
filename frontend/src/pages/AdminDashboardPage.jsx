@@ -186,6 +186,7 @@ function AdminDashboardPage() {
                     <th className="px-6 py-3 text-left text-sm font-semibold text-white">Email</th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-white">Role</th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-white">Joined</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-white">Last Updated</th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-white">Actions</th>
                   </tr>
                 </thead>
@@ -206,6 +207,9 @@ function AdminDashboardPage() {
                       </td>
                       <td className="px-6 py-3 text-slate-300 text-sm">
                         {new Date(u.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-3 text-slate-300 text-sm">
+                        {u.updatedAt ? new Date(u.updatedAt).toLocaleDateString() : '-'}
                       </td>
                       <td className="px-6 py-3">
                         <button

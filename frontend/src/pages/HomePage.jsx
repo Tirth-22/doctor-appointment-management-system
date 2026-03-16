@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import DoctorCard from '../components/DoctorCard';
 import BookAppointmentModal from '../components/BookAppointmentModal';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { doctorApi } from '../services/api';
+import { doctorApi, feedbackApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Stethoscope, Heart, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -25,7 +25,31 @@ export default function HomePage() {
     try {
       const response = await doctorApi.getAllDoctors();
       console.log('HomePage: Doctors fetched:', response?.data);
-      setDoctors(response?.data?.data || response?.data || []);
+      const rawDoctors = response?.data?.data || response?.data || [];
+      const doctorsWithRatings = await Promise.all(
+        rawDoctors.map(async (doctor) => {
+          try {
+            const [ratingRes, countRes] = await Promise.all([
+              feedbackApi.getDoctorRating(doctor.id),
+              feedbackApi.getDoctorFeedbackCount(doctor.id),
+            ]);
+
+            return {
+              ...doctor,
+              averageRating: ratingRes.data?.data || 0,
+              ratingCount: countRes.data?.data || 0,
+            };
+          } catch (ratingError) {
+            return {
+              ...doctor,
+              averageRating: 0,
+              ratingCount: 0,
+            };
+          }
+        })
+      );
+
+      setDoctors(doctorsWithRatings);
     } catch (error) {
       console.error('HomePage: Error fetching doctors:', error?.message);
       setDoctors([]);
@@ -75,6 +99,46 @@ export default function HomePage() {
                 {isAuthenticated ? 'View Appointments' : 'Get Started'}
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Help / FAQ */}
+      <section className="py-14 bg-blue-50 border-y border-blue-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Quick Help</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              {
+                q: 'Can I book for today?',
+                a: 'Yes, you can book same-day appointments if the doctor has an available slot.',
+              },
+              {
+                q: 'Can I book in the past?',
+                a: 'No. Past dates are blocked automatically.',
+              },
+              {
+                q: 'How do I cancel an appointment?',
+                a: 'Open My Appointments and use the Cancel button on eligible bookings.',
+              },
+              {
+                q: 'Where can I leave feedback?',
+                a: 'After an appointment is marked completed, use Leave Feedback in My Appointments.',
+              },
+              {
+                q: 'Can I search doctors by hospital or specialization?',
+                a: 'Yes. Use the search type dropdown on the Find Doctors page.',
+              },
+              {
+                q: 'How do doctors control booking times?',
+                a: 'Doctors set weekly availability in My Profile, and bookings follow those slots.',
+              },
+            ].map((item) => (
+              <div key={item.q} className="bg-white rounded-lg border border-blue-100 p-4">
+                <h3 className="font-semibold text-gray-800 mb-1">{item.q}</h3>
+                <p className="text-sm text-gray-600">{item.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -131,7 +195,15 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600">No doctors available</p>
+              <p className="text-gray-600">No doctors are listed yet.</p>
+              {!isAuthenticated && (
+                <Link
+                  to="/register"
+                  className="inline-block mt-4 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  Join as a doctor or patient
+                </Link>
+              )}
             </div>
           )}
 

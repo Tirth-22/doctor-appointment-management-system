@@ -54,20 +54,22 @@ public class FeedbackService {
             throw new BadRequestException("Only the patient who booked this appointment can submit feedback");
         }
 
-        // Check if feedback already exists
-        if (feedbackRepository.findByAppointmentIdAndPatientId(appointmentId, patient.getId()).isPresent()) {
-            throw new BadRequestException("Feedback already submitted for this appointment");
-        }
-
-        // Create feedback
-        Feedback feedback = Feedback.builder()
+        // Create or update feedback for this appointment by the same patient.
+        Feedback feedback = feedbackRepository.findByAppointmentIdAndPatientId(appointmentId, patient.getId())
+                .map(existing -> {
+                    existing.setRating(feedbackDto.getRating());
+                    existing.setComment(feedbackDto.getComment());
+                    existing.setWouldRecommend(feedbackDto.getWouldRecommend() != null ? feedbackDto.getWouldRecommend() : true);
+                    return existing;
+                })
+                .orElseGet(() -> Feedback.builder()
                 .appointment(appointment)
                 .doctor(appointment.getDoctor())
                 .patient(patient)
                 .rating(feedbackDto.getRating())
                 .comment(feedbackDto.getComment())
                 .wouldRecommend(feedbackDto.getWouldRecommend() != null ? feedbackDto.getWouldRecommend() : true)
-                .build();
+                .build());
 
         feedback = feedbackRepository.save(feedback);
         log.info("Feedback submitted for appointment {}", appointmentId);

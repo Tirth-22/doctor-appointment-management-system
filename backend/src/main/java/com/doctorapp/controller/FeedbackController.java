@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/feedback")
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 public class FeedbackController {
 
@@ -34,7 +33,7 @@ public class FeedbackController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ApiResponse.<FeedbackDto>builder()
                         .success(true)
-                        .message("Feedback submitted successfully")
+                        .message("Feedback saved successfully")
                         .data(feedback)
                         .build()
         );

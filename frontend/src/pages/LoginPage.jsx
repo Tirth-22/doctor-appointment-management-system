@@ -9,6 +9,10 @@ export default function LoginPage() {
     email: '',
     password: '',
   });
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  });
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -16,13 +20,22 @@ export default function LoginPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.email || !formData.password) {
-      toast.error('Please fill in all fields');
+
+    const nextErrors = { email: '', password: '' };
+    if (!formData.email) {
+      nextErrors.email = 'Email is required';
+    }
+    if (!formData.password) {
+      nextErrors.password = 'Password is required';
+    }
+
+    setErrors(nextErrors);
+    if (nextErrors.email || nextErrors.password) {
       return;
     }
 
@@ -31,10 +44,10 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result.success) {
-      toast.success('Login successful!');
+      toast.success('Logged in successfully');
       navigate('/');
     } else {
-      toast.error(result.message);
+      toast.error(result.message || 'Unable to log in. Please try again.');
     }
   };
 
@@ -56,11 +69,12 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
                   placeholder="you@example.com"
                   required
                 />
               </div>
+              {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
             </div>
 
             <div>
@@ -74,17 +88,18 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
                   placeholder="Enter your password"
                   required
                 />
               </div>
+              {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password}</p>}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-medical-600 text-white py-2 rounded-lg hover:bg-medical-700 transition font-semibold disabled:opacity-50"
+              className="w-full bg-medical-600 text-white py-2.5 rounded-lg hover:bg-medical-700 transition font-semibold disabled:opacity-50"
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>

@@ -3,6 +3,8 @@ package com.doctorapp.dto;
 import com.doctorapp.entity.Role;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,4 +16,6 @@ public class UserDto {
     private String name;
     private String email;
     private Role role;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

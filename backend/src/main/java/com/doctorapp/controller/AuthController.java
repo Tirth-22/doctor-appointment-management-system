@@ -10,10 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 public class AuthController {
 
@@ -25,11 +23,11 @@ public class AuthController {
         log.info("Register request for email: {}", request.getEmail());
         AuthResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            ApiResponse.<AuthResponse>builder()
-                .success(true)
-                .message("Registration successful")
-                .data(response)
-                .build()
+                ApiResponse.<AuthResponse>builder()
+                        .success(true)
+                        .message("Registration successful")
+                        .data(response)
+                        .build()
         );
     }
 
@@ -38,11 +36,11 @@ public class AuthController {
         log.info("Login request for email: {}", request.getEmail());
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(
-            ApiResponse.<AuthResponse>builder()
-                .success(true)
-                .message("Login successful")
-                .data(response)
-                .build()
+                ApiResponse.<AuthResponse>builder()
+                        .success(true)
+                        .message("Login successful")
+                        .data(response)
+                        .build()
         );
     }
 
@@ -51,28 +49,28 @@ public class AuthController {
         if (authentication != null) {
             UserDto user = authService.getCurrentUser(authentication.getName());
             return ResponseEntity.ok(
-                ApiResponse.<UserDto>builder()
-                    .success(true)
-                    .message("User fetched successfully")
-                    .data(user)
-                    .build()
+                    ApiResponse.<UserDto>builder()
+                            .success(true)
+                            .message("User fetched successfully")
+                            .data(user)
+                            .build()
             );
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-            ApiResponse.<UserDto>builder()
-                .success(false)
-                .message("User not authenticated")
-                .build()
+                ApiResponse.<UserDto>builder()
+                        .success(false)
+                        .message("User not authenticated")
+                        .build()
         );
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Object>> logout() {
         return ResponseEntity.ok(
-            ApiResponse.builder()
-                .success(true)
-                .message("Logged out successfully")
-                .build()
+                ApiResponse.builder()
+                        .success(true)
+                        .message("Logged out successfully")
+                        .build()
         );
     }
 }

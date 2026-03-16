@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import FeedbackModal from '../components/FeedbackModal';
 import { appointmentApi } from '../services/api';
@@ -40,12 +41,15 @@ export default function AppointmentsPage() {
     }
 
     try {
+      setActionInProgress(appointmentId);
       await appointmentApi.cancelAppointment(appointmentId);
-      toast.success('Appointment cancelled successfully');
+      toast.success('Appointment cancelled');
       fetchAppointments();
     } catch (error) {
       console.error('Error cancelling appointment:', error);
-      toast.error('Failed to cancel appointment');
+      toast.error(error.response?.data?.message || 'Unable to cancel appointment right now.');
+    } finally {
+      setActionInProgress(null);
     }
   };
 
@@ -267,10 +271,11 @@ export default function AppointmentsPage() {
                   <div className="flex justify-end">
                     <button
                       onClick={() => handleCancel(appointment.id)}
-                      className="flex items-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                      disabled={actionInProgress === appointment.id}
+                      className="flex items-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 size={18} />
-                      <span>Cancel</span>
+                      <span>{actionInProgress === appointment.id ? 'Processing...' : 'Cancel'}</span>
                     </button>
                   </div>
                 )}
@@ -321,6 +326,14 @@ export default function AppointmentsPage() {
                   : 'No appointments booked yet'
                 : `No ${filter} appointments`}
             </p>
+            {user?.role !== 'DOCTOR' && filter === 'all' && (
+              <Link
+                to="/doctors"
+                className="inline-block mt-4 px-5 py-2.5 bg-medical-600 text-white rounded-lg hover:bg-medical-700 transition"
+              >
+                Book your first appointment
+              </Link>
+            )}
           </div>
         )}
 

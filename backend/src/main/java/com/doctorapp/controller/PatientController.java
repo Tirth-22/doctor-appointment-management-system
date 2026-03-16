@@ -10,10 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/patients")
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 public class PatientController {
 
@@ -27,10 +25,10 @@ public class PatientController {
         // For this example, we assume userId is same as authentication principal
         // In production, you should implement custom UserDetails
         return ResponseEntity.ok(
-            ApiResponse.<PatientDto>builder()
-                .success(true)
-                .message("Patient profile fetched successfully")
-                .build()
+                ApiResponse.<PatientDto>builder()
+                        .success(true)
+                        .message("Patient profile fetched successfully")
+                        .build()
         );
     }
 
@@ -40,11 +38,11 @@ public class PatientController {
         // In real scenario, extract userId from authentication
         PatientDto updatedPatient = patientService.updatePatientProfile(1L, dto);
         return ResponseEntity.ok(
-            ApiResponse.<PatientDto>builder()
-                .success(true)
-                .message("Patient profile updated successfully")
-                .data(updatedPatient)
-                .build()
+                ApiResponse.<PatientDto>builder()
+                        .success(true)
+                        .message("Patient profile updated successfully")
+                        .data(updatedPatient)
+                        .build()
         );
     }
 }

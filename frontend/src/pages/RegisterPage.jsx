@@ -11,6 +11,11 @@ export default function RegisterPage() {
     password: '',
     role: 'PATIENT',
   });
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -18,18 +23,33 @@ export default function RegisterPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.password) {
-      toast.error('Please fill in all fields');
-      return;
+    const nextErrors = {
+      name: '',
+      email: '',
+      password: '',
+    };
+
+    if (!formData.name.trim()) {
+      nextErrors.name = 'Full name is required';
+    }
+    if (!formData.email.trim()) {
+      nextErrors.email = 'Email is required';
+    }
+    if (!formData.password) {
+      nextErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      nextErrors.password = 'Password must be at least 6 characters';
     }
 
-    if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+    setErrors(nextErrors);
+
+    if (nextErrors.name || nextErrors.email || nextErrors.password) {
       return;
     }
 
@@ -43,10 +63,10 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (result.success) {
-      toast.success('Registration successful!');
+      toast.success('Account created successfully');
       navigate('/');
     } else {
-      toast.error(result.message);
+      toast.error(result.message || 'Unable to create account. Please try again.');
     }
   };
 
@@ -68,11 +88,12 @@ export default function RegisterPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
                   placeholder="John Doe"
                   required
                 />
               </div>
+              {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
             </div>
 
             <div>
@@ -86,11 +107,12 @@ export default function RegisterPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
                   placeholder="you@example.com"
                   required
                 />
               </div>
+              {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
             </div>
 
             <div>
@@ -104,12 +126,13 @@ export default function RegisterPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
                   placeholder="Enter your password"
                   required
                   minLength="6"
                 />
               </div>
+              {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password}</p>}
               <p className="text-xs text-gray-500 mt-1">At least 6 characters</p>
             </div>
 
@@ -121,7 +144,7 @@ export default function RegisterPage() {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent"
               >
                 <option value="PATIENT">Patient</option>
                 <option value="DOCTOR">Doctor</option>
@@ -131,7 +154,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-medical-600 text-white py-2 rounded-lg hover:bg-medical-700 transition font-semibold disabled:opacity-50"
+              className="w-full bg-medical-600 text-white py-2.5 rounded-lg hover:bg-medical-700 transition font-semibold disabled:opacity-50"
             >
               {loading ? 'Creating Account...' : 'Sign Up'}
             </button>

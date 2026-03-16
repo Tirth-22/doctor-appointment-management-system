@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/doctors")
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 public class DoctorController {
 

@@ -6,6 +6,20 @@ import { useAuth } from '../context/AuthContext';
 export default function DoctorCard({ doctor, onBookClick }) {
   const { user } = useAuth();
   const isRestrictedRole = user?.role === 'DOCTOR' || user?.role === 'ADMIN';
+  const averageRating = Number(doctor.averageRating || 0);
+  const ratingCount = Number(doctor.ratingCount || 0);
+
+  const renderStarClass = (index) => {
+    const starValue = index + 1;
+    if (averageRating >= starValue) {
+      return 'fill-yellow-400 text-yellow-400';
+    }
+    if (averageRating >= starValue - 0.5) {
+      return 'fill-yellow-200 text-yellow-400';
+    }
+    return 'text-gray-300';
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
       <div className="bg-medical-600 h-32 flex items-center justify-center">
@@ -33,9 +47,11 @@ export default function DoctorCard({ doctor, onBookClick }) {
 
         <div className="flex items-center space-x-1 mb-4">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
+            <Star key={i} size={16} className={renderStarClass(i)} />
           ))}
-          <span className="text-sm text-gray-600 ml-2">(4.8)</span>
+          <span className="text-sm text-gray-600 ml-2">
+            {ratingCount > 0 ? `${averageRating.toFixed(1)} (${ratingCount})` : 'No ratings yet'}
+          </span>
         </div>
 
         <button
