@@ -23,3 +23,13 @@ code {
 html {
   scroll-behavior: smooth;
 }
+
+@media (max-width: 640px) {
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 16px;
+  }
+}
