@@ -52,10 +52,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-gray-50">
+    <div className="flex items-start sm:items-center justify-center min-h-[calc(100vh-80px)] bg-gray-50 py-6 sm:py-0">
       <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Login</h1>
+        <div className="bg-white rounded-lg shadow-md p-5 sm:p-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 text-gray-800">Login</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

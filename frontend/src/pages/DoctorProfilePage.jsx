@@ -27,6 +27,8 @@ function DoctorProfilePage() {
     specialization: '',
     experience: '',
     hospital: '',
+    address: '',
+    consultationFee: '',
     bio: ''
   });
 
@@ -45,6 +47,16 @@ function DoctorProfilePage() {
       key: 'hospital',
       label: 'Add hospital or clinic name',
       complete: !!formData.hospital.trim(),
+    },
+    {
+      key: 'address',
+      label: 'Add clinic address',
+      complete: !!formData.address.trim(),
+    },
+    {
+      key: 'consultationFee',
+      label: 'Set consultation fee',
+      complete: formData.consultationFee !== '' && Number(formData.consultationFee) >= 0,
     },
     {
       key: 'bio',
@@ -102,6 +114,35 @@ function DoctorProfilePage() {
   }, [user]);
 
   useEffect(() => {
+    const loadDoctorProfile = async () => {
+      if (!user?.id || user?.role !== 'DOCTOR') {
+        return;
+      }
+
+      try {
+        const response = await doctorApi.getAllDoctors();
+        const doctors = response.data?.data || [];
+        const myDoctorProfile = doctors.find((d) => d.userId === user.id);
+
+        if (myDoctorProfile) {
+          setFormData({
+            specialization: myDoctorProfile.specialization || '',
+            experience: myDoctorProfile.experience ?? '',
+            hospital: myDoctorProfile.hospital || '',
+            address: myDoctorProfile.address || '',
+            consultationFee: myDoctorProfile.consultationFee ?? '',
+            bio: myDoctorProfile.bio || '',
+          });
+        }
+      } catch (error) {
+        console.error('Error loading doctor profile:', error);
+      }
+    };
+
+    loadDoctorProfile();
+  }, [user]);
+
+  useEffect(() => {
     const loadAvailability = async () => {
       if (!user?.id || user?.role !== 'DOCTOR') {
         return;
@@ -144,10 +185,22 @@ function DoctorProfilePage() {
       toast.error('Hospital is required');
       return;
     }
+    if (!formData.address.trim()) {
+      toast.error('Address is required');
+      return;
+    }
+    if (formData.consultationFee === '' || Number(formData.consultationFee) < 0) {
+      toast.error('Consultation fee must be 0 or more');
+      return;
+    }
 
     setLoading(true);
     try {
-      await doctorApi.updateProfile(user.id, formData);
+      await doctorApi.updateProfile(user.id, {
+        ...formData,
+        experience: Number(formData.experience),
+        consultationFee: Number(formData.consultationFee),
+      });
       toast.success('Profile updated successfully!');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update profile');
@@ -205,7 +258,7 @@ function DoctorProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8">
         <div className="flex items-center mb-6">
           <button 
             onClick={() => navigate(-1)}
@@ -213,7 +266,7 @@ function DoctorProfilePage() {
           >
             <ArrowLeft size={24} />
           </button>
-          <h1 className="text-3xl font-bold text-gray-800">Complete Your Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Complete Your Profile</h1>
         </div>
 
         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
@@ -293,6 +346,36 @@ function DoctorProfilePage() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Clinic Address *
+            </label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="e.g., 123 Main Street, City"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Consultation Fee (USD) *
+            </label>
+            <input
+              type="number"
+              name="consultationFee"
+              value={formData.consultationFee}
+              onChange={handleChange}
+              placeholder="e.g., 50"
+              min="0"
+              step="0.01"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Bio / Professional Summary
             </label>
             <textarea
@@ -322,8 +405,8 @@ function DoctorProfilePage() {
         </form>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <Clock size={24} className="text-blue-600" />
               Weekly Availability
@@ -332,13 +415,13 @@ function DoctorProfilePage() {
               type="button"
               onClick={handleSaveWeeklySchedule}
               disabled={savingAvailability}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
             >
               {savingAvailability ? 'Saving...' : 'Save Weekly Schedule'}
             </button>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             <select
               value={slotForm.dayOfWeek}
               onChange={(e) => setSlotForm((prev) => ({ ...prev, dayOfWeek: e.target.value }))}
@@ -366,7 +449,7 @@ function DoctorProfilePage() {
             <button
               type="button"
               onClick={handleAddSlot}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
+              className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
             >
               <Plus size={16} />
               Add Slot
@@ -414,8 +497,8 @@ function DoctorProfilePage() {
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <MessageSquare size={24} className="text-blue-600" />
               Patient Feedback

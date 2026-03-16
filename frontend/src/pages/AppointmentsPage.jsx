@@ -138,13 +138,13 @@ export default function AppointmentsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-6 sm:mb-8">
           {user?.role === 'DOCTOR' ? 'Pending Appointments' : 'My Appointments'}
         </h1>
 
         {/* Filter Tabs */}
-        <div className="flex space-x-2 mb-8 border-b">
+        <div className="flex space-x-2 mb-6 sm:mb-8 border-b overflow-x-auto whitespace-nowrap pb-2">
           {user?.role === 'DOCTOR' 
             ? ['all', 'pending', 'confirmed', 'cancelled'].map((status) => (
                 <button
@@ -183,9 +183,9 @@ export default function AppointmentsPage() {
             {filteredAppointments.map((appointment) => (
               <div
                 key={appointment.id}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+                className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition"
               >
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
                   <div>
                     {user?.role === 'DOCTOR' ? (
                       <>
@@ -193,7 +193,7 @@ export default function AppointmentsPage() {
                           <User size={24} className="text-medical-600" />
                           <span>{appointment.patientName}</span>
                         </h3>
-                        <p className="text-sm text-gray-600 ml-8">Patient</p>
+                        <p className="text-sm text-gray-600 ml-0 sm:ml-8">Patient</p>
                       </>
                     ) : (
                       <>
@@ -201,7 +201,7 @@ export default function AppointmentsPage() {
                           <Stethoscope size={24} className="text-medical-600" />
                           <span>{appointment.doctorName}</span>
                         </h3>
-                        <p className="text-sm text-gray-600 ml-8">{appointment.doctorSpecialization}</p>
+                        <p className="text-sm text-gray-600 ml-0 sm:ml-8">{appointment.doctorSpecialization}</p>
                       </>
                     )}
                   </div>
@@ -210,7 +210,7 @@ export default function AppointmentsPage() {
                   </span>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-4 mb-4 ml-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 ml-0 sm:ml-8">
                   <div className="flex items-center space-x-2 text-gray-700">
                     <Calendar size={18} className="text-medical-600" />
                     <span>
@@ -235,7 +235,7 @@ export default function AppointmentsPage() {
                 </div>
 
                 {appointment.notes && (
-                  <div className="ml-8 mb-4 p-4 bg-blue-50 rounded-lg flex space-x-2">
+                  <div className="ml-0 sm:ml-8 mb-4 p-4 bg-blue-50 rounded-lg flex space-x-2">
                     <AlertCircle size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-sm font-medium text-blue-900">Notes</p>
@@ -246,11 +246,11 @@ export default function AppointmentsPage() {
 
                 {/* Doctor Actions */}
                 {user?.role === 'DOCTOR' && appointment.status === 'PENDING' && (
-                  <div className="flex justify-end space-x-3">
+                  <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
                     <button
                       onClick={() => handleReject(appointment.id)}
                       disabled={actionInProgress === appointment.id}
-                      className="flex items-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <XCircle size={18} />
                       <span>{actionInProgress === appointment.id ? 'Processing...' : 'Reject'}</span>
@@ -258,7 +258,7 @@ export default function AppointmentsPage() {
                     <button
                       onClick={() => handleAccept(appointment.id)}
                       disabled={actionInProgress === appointment.id}
-                      className="flex items-center space-x-1 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-1 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <CheckCircle size={18} />
                       <span>{actionInProgress === appointment.id ? 'Processing...' : 'Accept'}</span>
@@ -272,7 +272,7 @@ export default function AppointmentsPage() {
                     <button
                       onClick={() => handleCancel(appointment.id)}
                       disabled={actionInProgress === appointment.id}
-                      className="flex items-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 size={18} />
                       <span>{actionInProgress === appointment.id ? 'Processing...' : 'Cancel'}</span>
@@ -281,11 +281,11 @@ export default function AppointmentsPage() {
                 )}
 
                 {user?.role !== 'DOCTOR' && appointment.status === 'CONFIRMED' && (
-                  <div className="flex justify-end space-x-3">
+                  <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
                     <button
                       onClick={() => handleCancel(appointment.id)}
                       disabled={actionInProgress === appointment.id}
-                      className="flex items-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-1 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 size={18} />
                       <span>{actionInProgress === appointment.id ? 'Processing...' : 'Cancel'}</span>
@@ -293,7 +293,7 @@ export default function AppointmentsPage() {
                     <button
                       onClick={() => handleComplete(appointment.id)}
                       disabled={actionInProgress === appointment.id}
-                      className="flex items-center space-x-1 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-1 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <CheckCircle size={18} />
                       <span>{actionInProgress === appointment.id ? 'Processing...' : 'Mark Completed'}</span>

@@ -24,5 +24,12 @@ public class DoctorDto {
     @NotBlank
     private String hospital;
 
+    @NotBlank
+    private String address;
+
+    @NotNull
+    @PositiveOrZero
+    private Double consultationFee;
+
     private String bio;
 }

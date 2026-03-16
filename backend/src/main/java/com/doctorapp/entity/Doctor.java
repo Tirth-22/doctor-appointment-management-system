@@ -29,6 +29,12 @@ public class Doctor {
     @Column(nullable = false)
     private String hospital;
 
+    @Column
+    private String address;
+
+    @Column
+    private Double consultationFee;
+
     @Column(columnDefinition = "TEXT")
     private String bio;
 }

@@ -65,6 +65,8 @@ public class AuthService {
                     .specialization("")
                     .experience(0)
                     .hospital("")
+                    .address("")
+                    .consultationFee(0.0)
                     .bio("")
                     .build();
             doctorRepository.save(doctor);

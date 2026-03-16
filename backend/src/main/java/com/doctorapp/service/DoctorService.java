@@ -71,6 +71,8 @@ public class DoctorService {
         doctor.setSpecialization(dto.getSpecialization());
         doctor.setExperience(dto.getExperience());
         doctor.setHospital(dto.getHospital());
+        doctor.setAddress(dto.getAddress());
+        doctor.setConsultationFee(dto.getConsultationFee());
         doctor.setBio(dto.getBio());
 
         doctor = doctorRepository.save(doctor);
@@ -86,6 +88,8 @@ public class DoctorService {
                 .specialization(doctor.getSpecialization())
                 .experience(doctor.getExperience())
                 .hospital(doctor.getHospital())
+                .address(doctor.getAddress())
+                .consultationFee(doctor.getConsultationFee())
                 .bio(doctor.getBio())
                 .build();
     }

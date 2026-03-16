@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { appointmentApi } from '../services/api';
+import { appointmentApi, availabilityApi } from '../services/api';
 import toast from 'react-hot-toast';
+
+const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
 export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -10,6 +12,8 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
     appointmentTime: '',
     notes: '',
   });
+  const [availabilitySlots, setAvailabilitySlots] = useState([]);
+  const [loadingAvailability, setLoadingAvailability] = useState(false);
   const [errors, setErrors] = useState({
     appointmentDate: '',
     appointmentTime: '',
@@ -19,6 +23,33 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
   const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
     .toISOString()
     .split('T')[0];
+
+  useEffect(() => {
+    const fetchDoctorAvailability = async () => {
+      if (!doctor?.id) {
+        return;
+      }
+
+      setLoadingAvailability(true);
+      try {
+        const response = await availabilityApi.getAvailabilityByDoctor(doctor.id);
+        setAvailabilitySlots(response.data?.data || []);
+      } catch (error) {
+        setAvailabilitySlots([]);
+      } finally {
+        setLoadingAvailability(false);
+      }
+    };
+
+    fetchDoctorAvailability();
+  }, [doctor?.id]);
+
+  const slotsByDay = DAYS.map((day) => ({
+    day,
+    slots: availabilitySlots
+      .filter((slot) => slot.dayOfWeek === day)
+      .sort((a, b) => a.startTime.localeCompare(b.startTime)),
+  })).filter((entry) => entry.slots.length > 0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,6 +107,28 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
           <div className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b">
             <p className="font-semibold text-gray-800">{doctor.name}</p>
             <p className="text-sm text-gray-600">{doctor.specialization}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              Fee: {typeof doctor.consultationFee === 'number' ? `$${doctor.consultationFee.toFixed(2)}` : 'Not set'}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">Address: {doctor.address || doctor.hospital || 'Not set'}</p>
+          </div>
+
+          <div className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b">
+            <p className="text-sm font-semibold text-gray-800 mb-2">Doctor Availability</p>
+            {loadingAvailability ? (
+              <p className="text-sm text-gray-500">Loading availability...</p>
+            ) : slotsByDay.length === 0 ? (
+              <p className="text-sm text-gray-500">No availability set yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {slotsByDay.map(({ day, slots }) => (
+                  <div key={day} className="text-sm text-gray-700">
+                    <span className="font-medium">{day}:</span>{' '}
+                    {slots.map((slot) => `${slot.startTime}-${slot.endTime}`).join(', ')}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

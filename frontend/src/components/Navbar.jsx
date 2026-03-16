@@ -11,7 +11,12 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
+    setMobileMenuOpen(false);
     navigate('/');
+  };
+
+  const handleMobileNavigate = () => {
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -19,7 +24,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 font-bold text-xl hover:text-medical-50">
+          <Link to="/" className="flex items-center space-x-2 font-bold text-lg sm:text-xl hover:text-medical-50">
             <div className="w-8 h-8 bg-medical-50 text-medical-600 rounded-full flex items-center justify-center font-bold">
               D
             </div>
@@ -92,26 +97,26 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden pb-4 space-y-3">
-            <Link to="/" className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
+            <Link to="/" onClick={handleMobileNavigate} className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
               Home
             </Link>
-            <Link to="/doctors" className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
+            <Link to="/doctors" onClick={handleMobileNavigate} className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
               Doctors
             </Link>
             {isAuthenticated && (
               <>
                 {user?.role !== 'ADMIN' && (
-                  <Link to="/appointments" className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
+                  <Link to="/appointments" onClick={handleMobileNavigate} className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
                     Appointments
                   </Link>
                 )}
                 {user?.role === 'DOCTOR' && (
-                  <Link to="/doctor-profile" className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
+                  <Link to="/doctor-profile" onClick={handleMobileNavigate} className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
                     My Profile
                   </Link>
                 )}
                 {user?.role === 'ADMIN' && (
-                  <Link to="/admin" className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
+                  <Link to="/admin" onClick={handleMobileNavigate} className="block px-3 py-2 rounded-md hover:bg-medical-700 transition">
                     Admin Panel
                   </Link>
                 )}
@@ -128,10 +133,10 @@ export default function Navbar() {
               </button>
             ) : (
               <div className="space-y-2">
-                <Link to="/login" className="block px-3 py-2 bg-medical-50 text-medical-600 rounded-md hover:bg-gray-100 transition font-medium">
+                <Link to="/login" onClick={handleMobileNavigate} className="block px-3 py-2 bg-medical-50 text-medical-600 rounded-md hover:bg-gray-100 transition font-medium">
                   Login
                 </Link>
-                <Link to="/register" className="block px-3 py-2 border border-medical-50 rounded-md hover:bg-medical-700 transition font-medium">
+                <Link to="/register" onClick={handleMobileNavigate} className="block px-3 py-2 border border-medical-50 rounded-md hover:bg-medical-700 transition font-medium">
                   Sign Up
                 </Link>
               </div>

@@ -93,17 +93,17 @@ function AdminDashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
       {/* Header */}
       <div className="bg-slate-800 border-b border-slate-700 shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
                 <UserCog size={32} />
                 Admin Dashboard
               </h1>
               <p className="text-slate-400 mt-1">Manage system users and settings</p>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-white font-semibold">{user?.name}</span>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <span className="hidden sm:inline text-white font-semibold">{user?.name}</span>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
@@ -117,7 +117,7 @@ function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {[
             { label: 'Total Users', value: stats.total, color: 'from-blue-500 to-blue-600' },
@@ -127,15 +127,15 @@ function AdminDashboardPage() {
           ].map((stat, idx) => (
             <div key={idx} className={`bg-gradient-to-br ${stat.color} rounded-lg shadow-lg p-6 text-white`}>
               <p className="text-sm font-medium opacity-90">{stat.label}</p>
-              <p className="text-4xl font-bold mt-2">{stat.value}</p>
+              <p className="text-3xl sm:text-4xl font-bold mt-2">{stat.value}</p>
             </div>
           ))}
         </div>
 
         {/* Users Table */}
         <div className="bg-slate-700 rounded-lg shadow-lg overflow-hidden">
-          <div className="bg-slate-800 px-6 py-4 border-b border-slate-600 flex justify-between items-center">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <div className="bg-slate-800 px-4 sm:px-6 py-4 border-b border-slate-600 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
               <Users size={24} />
               {categoryTabs.find((tab) => tab.key === activeCategory)?.label || 'Users'}
             </h2>
@@ -149,7 +149,7 @@ function AdminDashboardPage() {
             </button>
           </div>
 
-          <div className="px-6 py-4 border-b border-slate-600 bg-slate-750">
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-600 bg-slate-750">
             <div className="flex flex-wrap gap-2">
               {categoryTabs.map((tab) => (
                 <button
@@ -177,7 +177,41 @@ function AdminDashboardPage() {
               <p>No users found</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="md:hidden p-4 space-y-3">
+              {users.map((u) => (
+                <div key={u.id} className="bg-slate-600 rounded-lg p-4">
+                  <div className="flex justify-between items-start gap-3 mb-2">
+                    <div>
+                      <p className="text-white font-semibold">{u.name}</p>
+                      <p className="text-slate-300 text-sm break-all">{u.email}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      u.role === 'DOCTOR' ? 'bg-green-500/20 text-green-400' :
+                      u.role === 'PATIENT' ? 'bg-purple-500/20 text-purple-400' :
+                      'bg-orange-500/20 text-orange-400'
+                    }`}>
+                      {u.role}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-300 space-y-1 mb-3">
+                    <p>ID: {u.id}</p>
+                    <p>Joined: {new Date(u.createdAt).toLocaleDateString()}</p>
+                    <p>Updated: {u.updatedAt ? new Date(u.updatedAt).toLocaleDateString() : '-'}</p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteUser(u.id, u.name)}
+                    disabled={deleting === u.id || u.id === user?.id}
+                    className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-500 text-white px-3 py-2 rounded text-sm transition"
+                  >
+                    <Trash2 size={16} />
+                    {deleting === u.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="bg-slate-800 border-b border-slate-600">
@@ -226,6 +260,7 @@ function AdminDashboardPage() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
 
