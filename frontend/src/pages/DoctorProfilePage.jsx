@@ -55,7 +55,7 @@ function DoctorProfilePage() {
     },
     {
       key: 'consultationFee',
-      label: 'Set consultation fee',
+      label: 'Set consultation fee (INR)',
       complete: formData.consultationFee !== '' && Number(formData.consultationFee) >= 0,
     },
     {
@@ -360,14 +360,14 @@ function DoctorProfilePage() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Consultation Fee (USD) *
+              Consultation Fee (INR) *
             </label>
             <input
               type="number"
               name="consultationFee"
               value={formData.consultationFee}
               onChange={handleChange}
-              placeholder="e.g., 50"
+              placeholder="e.g., 500"
               min="0"
               step="0.01"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

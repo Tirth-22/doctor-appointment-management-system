@@ -108,7 +108,9 @@ export default function BookAppointmentModal({ doctor, onClose, onSuccess }) {
             <p className="font-semibold text-gray-800">{doctor.name}</p>
             <p className="text-sm text-gray-600">{doctor.specialization}</p>
             <p className="text-sm text-gray-600 mt-1">
-              Fee: {typeof doctor.consultationFee === 'number' ? `$${doctor.consultationFee.toFixed(2)}` : 'Not set'}
+              Fee: {typeof doctor.consultationFee === 'number'
+                ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(doctor.consultationFee)
+                : 'Not set'}
             </p>
             <p className="text-sm text-gray-600 mt-1">Address: {doctor.address || doctor.hospital || 'Not set'}</p>
           </div>
