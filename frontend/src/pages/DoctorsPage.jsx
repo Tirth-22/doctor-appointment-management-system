@@ -87,11 +87,11 @@ export default function DoctorsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold text-gray-800 mb-12">Find Doctors</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-8 sm:mb-12">Find Doctors</h1>
 
         {/* Search Bar */}
-        <div className="mb-12 grid md:grid-cols-4 gap-3">
+        <div className="mb-8 sm:mb-12 grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="md:col-span-3 relative">
             <Search className="absolute left-4 top-3 text-gray-400" size={20} />
             <input
@@ -99,7 +99,7 @@ export default function DoctorsPage() {
               placeholder="Search doctors..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent text-lg"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-600 focus:border-transparent text-base sm:text-lg"
             />
           </div>
           <select
@@ -122,7 +122,7 @@ export default function DoctorsPage() {
             <p className="text-sm text-gray-600 mb-6">
               Found {filteredDoctors.length} doctor{filteredDoctors.length !== 1 ? 's' : ''}
             </p>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
               {filteredDoctors.map((doctor) => (
                 <DoctorCard
                   key={doctor.id}
