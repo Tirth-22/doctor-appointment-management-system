@@ -1,6 +1,6 @@
 # Doctor Appointment Management System
 
-A complete full-stack web application for managing doctor appointments. Built with **Spring Boot** (Backend) and **React with Vite** (Frontend), featuring JWT authentication, role-based access control, and PostgreSQL database.
+A complete full-stack web application for managing doctor appointments. Built with **Spring Boot** (Backend) and **React with Vite** (Frontend), featuring JWT authentication, role-based access control, and PostgreSQL database.Deployed in AWS cloud frontend in S3, Backend in EC2 and Database in RDS.
 
 ## 🚀 Features
 
