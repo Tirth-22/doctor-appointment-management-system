@@ -18,7 +18,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Check target folder
-        run: ls -R backend/target
+        run: ls -R target
 
       - name: Build Backend
         run: |
