@@ -17,6 +17,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Check target folder
+        run: ls -R backend/target
+
       - name: Build Backend
         run: |
           docker build \
