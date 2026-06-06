@@ -26,6 +26,7 @@ public class JwtTokenProvider {
                 .findFirst()
                 .orElse("ROLE_USER");
 
+
                 
         return Jwts.builder()
                 .subject(authentication.getName())
