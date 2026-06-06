@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+
+    environment:
+      POSTGRES_DB: dams
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+  backend:
+    image: ghcr.io/tirthmakadia/dams-backend-ci:latest
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dams
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+  frontend:
+    image: ghcr.io/tirthmakadia/dams-frontend-ci:latest
+
+    depends_on:
+    - backend
+
+    ports:
+    - "3000:80"
