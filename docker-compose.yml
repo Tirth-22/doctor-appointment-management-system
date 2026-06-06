@@ -11,7 +11,7 @@ services:
       - "5432:5432"
 
   backend:
-    image: ghcr.io/tirthmakadia/dams-backend-ci:latest
+    image: tirthmakadia/dams-backend-ci:latest
 
     depends_on:
       - postgres
@@ -24,7 +24,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
   frontend:
-    image: ghcr.io/tirthmakadia/dams-frontend-ci:latest
+    image: tirthmakadia/dams-frontend-ci:latest
 
     depends_on:
     - backend
